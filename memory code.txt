@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Power Game - 10 Levels</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 95%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        /* Player Name Input */
+        .player-input-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .player-input-container h2 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .input-group input {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 200px;
+        }
+
+        .input-group button {
+            padding: 12px 30px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .input-group button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .player-info {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .level-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .level-selector {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 30px;
+        }
+
+        .level-btn {
+            padding: 12px;
+            font-size: 12px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            background: white;
+            color: #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .level-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .level-btn.active {
+            background: #667eea;
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .level-btn.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .level-btn.locked:hover {
+            background: white;
+            color: #667eea;
+            transform: none;
+        }
+
+        .info {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            background: #f0f0f0;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            color: #667eea;
+            font-size: 14px;
+        }
+
+        .game-board {
+            display: grid;
+            margin-bottom: 30px;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .game-board.size-4 {
+            grid-template-columns: repeat(4, 80px);
+        }
+
+        .game-board.size-6 {
+            grid-template-columns: repeat(6, 70px);
+        }
+
+        .game-board.size-5 {
+            grid-template-columns: repeat(5, 70px);
+        }
+
+        .card {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 40px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .card.flipped {
+            background: white;
+            color: #333;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card.matched {
+            background: #4caf50;
+            color: white;
+            cursor: default;
+        }
+
+        .card.matched:hover {
+            transform: none;
+        }
+
+        .game-board.size-6 .card,
+        .game-board.size-5 .card {
+            width: 70px;
+            height: 70px;
+            font-size: 32px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .message {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4caf50;
+            margin-top: 20px;
+            min-height: 25px;
+        }
+
+        .message.error {
+            color: #ff6b6b;
+        }
+
+        /* Gift Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            animation: fadeIn 0.3s ease;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            animation: slideUp 0.5s ease;
+            max-width: 500px;
+            width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .gift-animation {
+            font-size: 120px;
+            animation: bounce 0.6s ease infinite;
+            margin: 20px 0;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-30px) scale(1.1); }
+        }
+
+        .modal-content h2 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .modal-content p {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .rewards {
+            background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .reward-item {
+            font-size: 14px;
+            color: #333;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .confetti {
+            position: fixed;
+            pointer-events: none;
+            animation: confettiFall 3s ease-in forwards;
+        }
+
+        @keyframes confettiFall {
+            to {
+                transform: translateY(100vh) rotateZ(360deg);
+                opacity: 0;
+            }
+        }
+
+        .level-info {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .score-board {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .score-board h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .score-list {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            font-size: 12px;
+        }
+
+        .score-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px;
+            border-radius: 5px;
+        }
+
+        .score-item.completed {
+            background: rgba(76, 175, 80, 0.3);
+            border: 1px solid #4caf50;
+        }
+
+        /* Certificate Modal */
+        .certificate-container {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            padding: 60px;
+            border-radius: 20px;
+            margin: 20px 0;
+            border: 5px solid #ffa500;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .certificate-header {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ff6b00;
+            margin-bottom: 20px;
+        }
+
+        .certificate-title {
+            font-size: 24px;
+            color: #333;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+
+        .certificate-player {
+            font-size: 28px;
+            color: #667eea;
+            font-weight: bold;
+            margin: 20px 0;
+            text-decoration: underline;
+        }
+
+        .certificate-message {
+            font-size: 16px;
+            color: #333;
+            margin: 15px 0;
+            font-style: italic;
+        }
+
+        .medal-animation {
+            font-size: 100px;
+            animation: medalSpin 1s ease-in-out infinite;
+            margin: 20px 0;
+        }
+
+        @keyframes medalSpin {
+            0%, 100% { transform: rotateZ(-10deg); }
+            50% { transform: rotateZ(10deg); }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .level-selector {
+                grid-template-columns: repeat(5, 1fr);
+            }
+
+            .card {
+                width: 60px;
+                height: 60px;
+                font-size: 28px;
+            }
+
+            .game-board.size-4 {
+                grid-template-columns: repeat(4, 60px);
+            }
+
+            .game-board.size-6,
+            .game-board.size-5 {
+                grid-template-columns: repeat(4, 60px);
+            }
+
+            .game-board.size-6 .card,
+            .game-board.size-5 .card {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+
+            .score-list {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .certificate-container {
+                padding: 30px;
+            }
+
+            .certificate-header {
+                font-size: 24px;
+            }
+
+            .certificate-player {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Player Name Input -->
+        <div class="player-input-container" id="playerInputContainer">
+            <h2>👋 Welcome to Memory Power Game!</h2>
+            <div class="input-group">
+                <input type="text" id="playerNameInput" placeholder="Enter your name" maxlength="20">
+                <button class="btn-primary" onclick="startGame()">Start Game</button>
+            </div>
+            <div class="player-info" id="playerInfo"></div>
+        </div>
+
+        <!-- Game Container -->
+        <div id="gameContainer" style="display: none;">
+            <h1>🎮 Memory Power Game</h1>
+            
+            <div class="level-display">
+                <span id="levelTitle">Level 1: Fruits 🍎</span>
+            </div>
+
+            <div class="level-info">
+                <span id="levelDescription">Find all fruit pairs to complete this level!</span>
+            </div>
+
+            <div class="score-board">
+                <h3>📊 Your Progress</h3>
+                <div class="score-list" id="scoreList"></div>
+            </div>
+
+            <div class="level-selector" id="levelSelector"></div>
+
+            <div class="info">
+                <div class="stat">Moves: <span id="moves">0</span></div>
+                <div class="stat">Matches: <span id="matches">0</span>/<span id="totalMatches">8</span></div>
+                <div class="stat">Best Score: <span id="bestScore">-</span></div>
+            </div>
+
+            <div class="game-board size-4" id="gameBoard"></div>
+
+            <div class="buttons">
+                <button class="btn-primary" onclick="initGame()">New Game</button>
+                <button class="btn-secondary" onclick="showLeaderboard()">Leaderboard</button>
+            </div>
+
+            <div class="message" id="message"></div>
+        </div>
+    </div>
+
+    <!-- Gift Modal -->
+    <div class="modal" id="giftModal">
+        <div class="modal-content">
+            <h2 id="modalTitle">🎉 Level Complete!</h2>
+            <div class="gift-animation" id="giftEmoji">🎁</div>
+            <p id="completionMessage"></p>
+            <div class="rewards">
+                <div class="reward-item">⭐ <strong id="stars">0</strong> Stars Earned</div>
+                <div class="reward-item">🏆 <strong id="trophy">Trophy</strong> Unlocked</div>
+                <div class="reward-item">💫 <strong id="points">0</strong> Bonus Points</div>
+                <div class="reward-item">📈 Total Score: <strong id="totalScore">0</strong></div>
+            </div>
+            <button class="btn-primary" onclick="nextLevel()" id="nextLevelBtn">Next Level →</button>
+            <button class="btn-secondary" onclick="retryLevel()" id="retryBtn" style="display: none;">Retry Level</button>
+        </div>
+    </div>
+
+    <!-- Certificate Modal -->
+    <div class="modal" id="certificateModal">
+        <div class="modal-content">
+            <div class="certificate-container">
+                <div class="certificate-header">🏆 CERTIFICATE OF ACHIEVEMENT 🏆</div>
+                <div class="certificate-title">Memory Power Game Master</div>
+                <div style="font-size: 18px; color: #333; margin: 15px 0;">This is proudly presented to</div>
+                <div class="certificate-player" id="certificatePlayer"></div>
+                <div class="certificate-message">
+                    For successfully completing all 10 levels with excellence and demonstrating outstanding memory skills!
+                </div>
+                <div style="font-size: 16px; color: #333; margin: 15px 0;">
+                    Final Score: <strong id="certificateScore"></strong> Points
+                </div>
+                <div style="font-size: 16px; color: #333; margin: 15px 0;">
+                    Date: <strong id="certificateDate"></strong>
+                </div>
+                <div class="medal-animation">🥇</div>
+            </div>
+            <button class="btn-primary" onclick="downloadCertificate()">📥 Download Certificate</button>
+            <button class="btn-secondary" onclick="playAgain()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Level Data with 10 levels
+        const levelData = {
+            1: {
+                name: 'Fruits',
+                description: 'Find all fruit pairs to complete this level!',
+                emojis: ['🍎', '🍌', '🍒', '🍉', '🍓', '🍊', '🍑', '🥝'],
+                pairs: 8,
+                gift: '🍰',
+                gridSize: 4
+            },
+            2: {
+                name: 'Flowers',
+                description: 'Find all flower pairs to complete this level!',
+                emojis: ['🌹', '🌻', '🌷', '🌸', '🏵️', '💐', '🌺', '🌼'],
+                pairs: 8,
+                gift: '🌹',
+                gridSize: 4
+            },
+            3: {
+                name: 'Animals',
+                description: 'Find all animal pairs to complete this level!',
+                emojis: ['🐶', '🐱', '🐻', '🐼', '🦊', '🐰', '🐸', '🐢', '🦁', '🐘', '🐒', '🦒'],
+                pairs: 12,
+                gift: '🦁',
+                gridSize: 6
+            },
+            4: {
+                name: 'Birds',
+                description: 'Find all bird pairs to complete this level!',
+                emojis: ['🦅', '🦉', '🦆', '🦢', '🦜', '🦚', '🐦', '🦣', '🦃', '🕊️', '🦅', '🦆'],
+                pairs: 12,
+                gift: '🦅',
+                gridSize: 6
+            },
+            5: {
+                name: 'Chocolates',
+                description: 'Find all chocolate pairs to complete this level!',
+                emojis: ['🍫', '🍬', '🍭', '🍮', '🍯', '🍰', '🧁', '🍪', '🍩', '🎂', '🧂', '🍨'],
+                pairs: 12,
+                gift: '🍫',
+                gridSize: 6
+            },
+            6: {
+                name: 'Clothes',
+                description: 'Find all clothing pairs to complete this level!',
+                emojis: ['👕', '👔', '👗', '👘', '👙', '👚', '👛', '👜', '👝', '🎒', '👞', '👠'],
+                pairs: 12,
+                gift: '👗',
+                gridSize: 6
+            },
+            7: {
+                name: 'Vegetables',
+                description: 'Find all vegetable pairs to complete this level!',
+                emojis: ['🥬', '🥦', '🥒', '🌶️', '🌽', '🥕', '🧄', '🧅', '🥔', '🥐', '🥖', '🥬'],
+                pairs: 12,
+                gift: '🥕',
+                gridSize: 6
+            },
+            8: {
+                name: 'Non-Veg Foods',
+                description: 'Find all non-vegetarian food pairs to complete this level!',
+                emojis: ['🍗', '🍖', '🌭', '🍔', '🍟', '🍕', '🥓', '🍤', '🍣', '🦐', '🦑', '🥩'],
+                pairs: 12,
+                gift: '🍗',
+                gridSize: 6
+            },
+            9: {
+                name: 'Smart Devices',
+                description: 'Find all smart device pairs to complete this level!',
+                emojis: ['📱', '💻', '⌨️', '🖱️', '🖥️', '📞', '☎️', '📷', '📹', '⌚', '🎧', '🎮'],
+                pairs: 12,
+                gift: '📱',
+                gridSize: 6
+            },
+            10: {
+                name: 'Baby Boys & Girls',
+                description: 'Find all baby pairs to complete this level!',
+                emojis: ['👶', '🧒', '👦', '👧', '🍼', '🧸', '👼', '🎀', '🎈', '🎁', '🛏️', '🚼'],
+                pairs: 12,
+                gift: '👶',
+                gridSize: 6
+            }
+        };
+
+        let playerName = '';
+        let currentLevel = 1;
+        let cards = [];
+        let flipped = [];
+        let matched = [];
+        let moves = 0;
+        let isLocked = false;
+        let totalScore = 0;
+        let levelScores = {};
+        let bestScores = {};
+
+        // Audio Context for sound effects
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(frequency, duration) {
+            try {
+                const oscillator = audioContext.createOscillator();
+                const envelope = audioContext.createGain();
+                
+                oscillator.frequency.value = frequency;
+                oscillator.type = 'sine';
+                
+                envelope.gain.setValueAtTime(0.3, audioContext.currentTime);
+                envelope.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.connect(envelope);
+                envelope.connect(audioContext.destination);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function playClickSound() {
+            playSound(400, 0.1);
+        }
+
+        function playMatchSound() {
+            playSound(800, 0.2);
+            setTimeout(() => playSound(1000, 0.2), 100);
+        }
+
+        function playWinSound() {
+            playSound(523, 0.3);
+            setTimeout(() => playSound(659, 0.3), 150);
+            setTimeout(() => playSound(784, 0.3), 300);
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.textContent = ['🎉', '🎊', '⭐', '🎁', '🏆', '💫', '✨'][Math.floor(Math.random() * 7)];
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-10px';
+                confetti.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                confetti.style.opacity = '1';
+                document.body.appendChild(confetti);
+
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        function startGame() {
+            const input = document.getElementById('playerNameInput');
+            playerName = input.value.trim();
+
+            if (!playerName) {
+                alert('Please enter your name to start!');
+                return;
+            }
+
+            document.getElementById('playerInputContainer').style.display = 'none';
+            document.getElementById('gameContainer').style.display = 'block';
+            
+            initializeScoreBoard();
+            updateLevelDisplay();
+            initGame();
+        }
+
+        function initializeScoreBoard() {
+            const scoreList = document.getElementById('scoreList');
+            scoreList.innerHTML = '';
+
+            for (let i = 1; i <= 10; i++) {
+                const scoreItem = document.createElement('div');
+                scoreItem.className = 'score-item';
+                scoreItem.id = `score-level-${i}`;
+                scoreItem.innerHTML = `<strong>L${i}</strong><br><span id="level-${i}-score">-</span>`;
+                scoreList.appendChild(scoreItem);
+            }
+        }
+
+        function updateScoreBoard() {
+            for (let i = 1; i <= 10; i++) {
+                const scoreItem = document.getElementById(`score-level-${i}`);
+                if (levelScores[i]) {
+                    scoreItem.classList.add('completed');
+                    document.getElementById(`level-${i}-score`).textContent = levelScores[i];
+                }
+            }
+        }
+
+        function selectLevel(level) {
+            if (level > currentLevel) {
+                showMessage('🔒 This level is locked! Complete previous levels first.');
+                return;
+            }
+
+            currentLevel = level;
+            updateLevelDisplay();
+            initGame();
+        }
+
+        function updateLevelDisplay() {
+            const level = levelData[currentLevel];
+            document.getElementById('levelTitle').textContent = `Level ${currentLevel}: ${level.name} ${level.gift}`;
+            document.getElementById('levelDescription').textContent = level.description;
+            document.getElementById('totalMatches').textContent = level.pairs;
+
+            // Update level selector
+            const levelSelector = document.getElementById('levelSelector');
+            levelSelector.innerHTML = '';
+
+            for (let i = 1; i <= 10; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'level-btn';
+                btn.innerHTML = `L${i}<br>${levelData[i].gift}`;
+                btn.onclick = () => selectLevel(i);
+
+                if (i === currentLevel) {
+                    btn.classList.add('active');
+                } else if (i > currentLevel) {
+                    btn.classList.add('locked');
+                }
+
+                levelSelector.appendChild(btn);
+            }
+
+            // Update game board grid
+            const gameBoard = document.getElementById('gameBoard');
+            if (level.gridSize === 4) {
+                gameBoard.className = 'game-board size-4';
+            } else if (level.gridSize === 5) {
+                gameBoard.className = 'game-board size-5';
+            } else {
+                gameBoard.className = 'game-board size-6';
+            }
+
+            // Update best score
+            document.getElementById('bestScore').textContent = bestScores[currentLevel] || '-';
+        }
+
+        function createCards() {
+            const levelEmojis = levelData[currentLevel].emojis;
+            const gameArray = [...levelEmojis, ...levelEmojis];
+            return gameArray.sort(() => Math.random() - 0.5);
+        }
+
+        function initGame() {
+            cards = createCards();
+            flipped = [];
+            matched = [];
+            moves = 0;
+            isLocked = false;
+            document.getElementById('moves').textContent = moves;
+            document.getElementById('matches').textContent = '0';
+            document.getElementById('message').textContent = '';
+            document.getElementById('message').className = 'message';
+            renderBoard();
+        }
+
+        function renderBoard() {
+            const gameBoard = document.getElementById('gameBoard');
+            gameBoard.innerHTML = '';
+
+            cards.forEach((card, index) => {
+                const cardElement = document.createElement('button');
+                cardElement.className = 'card';
+                
+                if (matched.includes(index)) {
+                    cardElement.classList.add('matched');
+                    cardElement.textContent = card;
+                    cardElement.disabled = true;
+                } else if (flipped.includes(index)) {
+                    cardElement.classList.add('flipped');
+                    cardElement.textContent = card;
+                } else {
+                    cardElement.textContent = '?';
+                }
+
+                cardElement.onclick = () => flipCard(index);
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        function flipCard(index) {
+            if (isLocked || flipped.includes(index) || matched.includes(index)) {
+                return;
+            }
+
+            playClickSound();
+            flipped.push(index);
+            renderBoard();
+
+            if (flipped.length === 2) {
+                isLocked = true;
+                moves++;
+                document.getElementById('moves').textContent = moves;
+
+                const [first, second] = flipped;
+
+                if (cards[first] === cards[second]) {
+                    playMatchSound();
+                    matched.push(first, second);
+                    flipped = [];
+                    isLocked = false;
+                    document.getElementById('matches').textContent = matched.length / 2;
+                    renderBoard();
+
+                    const totalPairs = levelData[currentLevel].pairs;
+                    if (matched.length === totalPairs * 2) {
+                        setTimeout(() => {
+                            playWinSound();
+                            showLevelComplete();
+                        }, 300);
+                    }
+                } else {
+                    setTimeout(() => {
+                        flipped = [];
+                        isLocked = false;
+                        renderBoard();
+                    }, 600);
+                }
+            }
+        }
+
+        function showLevelComplete() {
+            createConfetti();
+            
+            const stars = Math.max(1, Math.min(3, 30 - Math.floor(moves / 2)));
+            const basePoints = (30 - moves) * 10;
+            const levelBonus = currentLevel * 5;
+            const levelScore = Math.max(basePoints, 50) + levelBonus;
+
+            totalScore += levelScore;
+            levelScores[currentLevel] = levelScore;
+
+            if (!bestScores[currentLevel] || levelScore > bestScores[currentLevel]) {
+                bestScores[currentLevel] = levelScore;
+            }
+
+            updateScoreBoard();
+
+            document.getElementById('giftEmoji').textContent = levelData[currentLevel].gift;
+            document.getElementById('completionMessage').textContent = 
+                `Fantastic ${playerName}! You completed Level ${currentLevel} in ${moves} moves!`;
+            document.getElementById('stars').textContent = stars;
+            document.getElementById('points').textContent = levelScore;
+            document.getElementById('totalScore').textContent = totalScore;
+            document.getElementById('trophy').textContent = 
+                stars === 3 ? '⭐⭐⭐ Gold' : (stars === 2 ? '⭐⭐ Silver' : '⭐ Bronze');
+
+            document.getElementById('giftModal').classList.add('show');
+        }
+
+        function nextLevel() {
+            document.getElementById('giftModal').classList.remove('show');
+
+            if (currentLevel < 10) {
+                currentLevel++;
+                updateLevelDisplay();
+                initGame();
+            } else {
+                showFinalCertificate();
+            }
+        }
+
+        function retryLevel() {
+            document.getElementById('giftModal').classList.remove('show');
+            initGame();
+        }
+
+        function showFinalCertificate() {
+            createConfetti();
+            playWinSound();
+            setTimeout(() => playWinSound(), 300);
+            setTimeout(() => playWinSound(), 600);
+
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            document.getElementById('certificatePlayer').textContent = playerName.toUpperCase();
+            document.getElementById('certificateScore').textContent = totalScore;
+            document.getElementById('certificateDate').textContent = dateStr;
+
+            document.getElementById('certificateModal').classList.add('show');
+        }
+
+        function downloadCertificate() {
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            let certificateHTML = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Memory Game Certificate - ${playerName}</title>
+                <style>
+                    body { margin: 0; padding: 20px; background: #f5f5f5; font-family: Arial, sans-serif; }
+                    .certificate {
+                        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+                        padding: 60px;
+                        border: 5px solid #ffa500;
+                        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+                        max-width: 800px;
+                        margin: 0 auto;
+                        text-align: center;
+                        border-radius: 20px;
+                    }
+                    .header { font-size: 32px; font-weight: bold; color: #ff6b00; margin-bottom: 20px; }
+                    .title { font-size: 24px; color: #333; margin: 15px 0; font-weight: bold; }
+                    .player { font-size: 28px; color: #667eea; font-weight: bold; margin: 20px 0; text-decoration: underline; }
+                    .message { font-size: 16px; color: #333; margin: 15px 0; font-style: italic; }
+                    .score { font-size: 18px; color: #333; margin: 15px 0; }
+                    .date { font-size: 16px; color: #333; margin: 15px 0; }
+                    .medal { font-size: 80px; margin: 30px 0; }
+                </style>
+            </head>
+            <body>
+                <div class="certificate">
+                    <div class="header">🏆 CERTIFICATE OF ACHIEVEMENT 🏆</div>
+                    <div class="title">Memory Power Game Master</div>
+                    <div style="font-size: 18px; color: #333; margin: 15px 0;">This is proudly presented to</div>
+                    <div class="player">${playerName.toUpperCase()}</div>
+                    <div class="message">
+                        For successfully completing all 10 levels with excellence and demonstrating outstanding memory skills!
+                    </div>
+                    <div class="score">Final Score: ${totalScore} Points</div>
+                    <div class="date">Date: ${dateStr}</div>
+                    <div class="medal">🥇</div>
+                </div>
+            </body>
+            </html>
+            `;
+
+            const blob = new Blob([certificateHTML], { type: 'text/html' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Memory_Game_Certificate_${playerName}.html`;
+            link.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function playAgain() {
+            document.getElementById('certificateModal').classList.remove('show');
+            document.getElementById('gameContainer').style.display = 'none';
+            document.getElementById('playerInputContainer').style.display = 'block';
+            document.getElementById('playerNameInput').value = '';
+            
+            // Reset all data
+            playerName = '';
+            currentLevel = 1;
+            totalScore = 0;
+            levelScores = {};
+            bestScores = {};
+        }
+
+        function showLeaderboard() {
+            let leaderboardText = `📊 LEADERBOARD - ${playerName}\n\n`;
+            leaderboardText += `Total Score: ${totalScore} Points\n\n`;
+            leaderboardText += 'Level Scores:\n';
+
+            for (let i = 1; i <= 10; i++) {
+                const score = levelScores[i] || 'Not Completed';
+                leaderboardText += `Level ${i} (${levelData[i].name}): ${score}\n`;
+            }
+
+            alert(leaderboardText);
+        }
+
+        function showMessage(text) {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = 'message';
+        }
+    </script>
+</body>
+</html>
